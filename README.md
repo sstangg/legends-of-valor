@@ -1,13 +1,11 @@
 Required sections: Header, Files, Notes, How to compile and run, I/O Example
 
 
-# CS611-Assignment 1
-## Monsters And Heros
+# CS611-Assignment 4
+## Legends of Valor
 ---------------------------------------------------------------------------
-- Name: Nikki Rejai
-- Email: nikkirj@bu.edu
-- Student ID: U64797160
-
+- Name: Nikki Rejai, Sophia Tang
+- Email: nikkirj@bu.edu, sstang@bu.edu
 
 ## Files
 ---------------------------------------------------------------------------
@@ -82,7 +80,8 @@ Sliding puzzle fixes:
 1. Navigate to the directory "611-A4/src" after unzipping the files
 2. Run the following instructions:
 
-javac --release 8 -d bin core/*.java game/*.java grid/*.java hero/*.java iohandler/*.java main/*.java monster/*.java
+javac --release 8 -d bin core/\*.java game/\*.java grid/\*.java hero/\*.java iohandler/\*.java main/\*.java monster/\*.java
+
 java -cp bin main/Main
 
 

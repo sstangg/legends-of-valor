@@ -1,7 +1,6 @@
 package game;
 
 import core.Game;
-import core.Tile;
 import grid.Grid;
 import grid.Block;
 
@@ -9,10 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.Set;
 
-import core.Board;
-import core.Character;
 import iohandler.FileLoader;
 import iohandler.Input;
 import item.Item;
@@ -30,14 +26,14 @@ import monster.Spirit;
 import monster.Monster;
 
 
-public class MonstersAndHeros extends Game {
+public class LegendsOfValor extends Game {
 
     private Input input;
     private Hero[] heros;
     private Monster[] monsters;
     private List<Item> marketStock; 
     
-    public MonstersAndHeros(Input input, int[] heroType) {
+    public LegendsOfValor(Input input, int[] heroType) {
         this.input  =input;
 
         heros = new Hero[heroType.length];
@@ -79,7 +75,7 @@ public class MonstersAndHeros extends Game {
             manageInventory();
             return false;
         case 'M':
-            if (getHerosBlock().isMarket()) {
+            if (getHerosBlock().getType() == Block.Type.NEXUS) {
                 printMarketWelcome();
                 enterMarket();
             } else {
@@ -123,7 +119,7 @@ public class MonstersAndHeros extends Game {
             }
         }
 
-        if (getHerosBlock().isCommon()) {
+        if (getHerosBlock().getType() == Block.Type.PLAIN) {
             if (rollDice(2) == 1) {
                 System.out.println("Oh no! Monsters on the loose! Entering battle now!!");
                 wait(2);

@@ -9,10 +9,10 @@ public class GameManager {
     public void start() {
         
         String name = input.nextLine("Enter your name: ");
-        int count = input.nextInt("Enter the hero count (1-3): ", 1, 3);
-        int[] heroTypes = new int[count];
-        for (int i = 0; i < count; i++) {
-            System.out.printf("Select your hero %d(1: Warrior, 2: Sorcerer, 3: Paladin):", i+1);
+        int[] heroTypes = new int[3]; // 3 heroes
+        System.out.println("Select 3 heroes (1: Warrior, 2: Sorcerer, 3: Paladin:");
+        for (int i = 0; i < 3; i++) {
+            System.out.printf("Hero %d: ", i+1);
             heroTypes[i] = input.nextInt("",1,3);
         }       
         
@@ -20,10 +20,10 @@ public class GameManager {
         boolean won = true;
 
         while (playing) {
-            System.out.printf("Welcome to Monsters And Heros %s!%n", name);
+            System.out.printf("Welcome to Legends of Valor %s!%n", name);
             System.out.println("Prepare yourself for new adventures and challenges ahead!");
 
-            Game game = new MonstersAndHeros(input, heroTypes);
+            Game game = new LegendsOfValor(input, heroTypes);
             won = game.play();
             if (won) {
                 System.out.println("Congrats you won!");

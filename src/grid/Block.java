@@ -5,8 +5,15 @@ import core.Tile;
 public class Block extends Tile {
     public enum Type {
         INACCESSIBLE,
-        MARKET,
-        COMMON
+        MARKET, // TODO: delete when refactored
+        COMMON, // TODO: delete when refactored
+        // TODO: implement tile spaces across grid, gameplay
+        NEXUS, // same as market
+        OBSTACLE,
+        PLAIN, // same as common
+        BUSH,
+        CAVE,
+        KOULOU
     }
 
     private Type type;
@@ -32,16 +39,6 @@ public class Block extends Tile {
     public boolean isAccessible() {
         return type != Type.INACCESSIBLE;
     }
-
-    public boolean isMarket() {
-        return type == Type.MARKET;
-    }
-
-    public boolean isCommon() {
-        return type == Type.COMMON;
-    }
-    
-
     public void moveHerosOn() {
         hasHeros = true;
     }
@@ -72,8 +69,9 @@ public class Block extends Tile {
         }
         switch (type) {
             case INACCESSIBLE: return "X";
-            case MARKET: return "M";
-            case COMMON: return " ";
+            case NEXUS: return "N";
+            // TODO: add more cases
+            case PLAIN: return " ";
             default: return " ";
         }
     }

@@ -27,7 +27,7 @@ public class Grid extends Board {
         List<Block.Type> blocks = new ArrayList<>();
 
         for (int i = 0; i < market; i++) {
-            blocks.add(Block.Type.MARKET);
+            blocks.add(Block.Type.NEXUS);
         }
         for (int i = 0; i < inaccessible; i++) {
             blocks.add(Block.Type.INACCESSIBLE);
