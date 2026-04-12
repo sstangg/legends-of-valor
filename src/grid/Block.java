@@ -43,7 +43,7 @@ public class Block extends Tile {
 
     @Override
     public boolean isAccessible() {
-        return type != Type.INACCESSIBLE;
+        return type != Type.INACCESSIBLE && type != Type.BORDER;
     }
 
     public boolean hasHeros() {

@@ -1,16 +1,8 @@
 package grid;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
-
 import core.Board;
 import core.Tile;
-import hero.Paladin;
-import hero.Sorcerer;
-import hero.Warrior;
-import game.LegendsOfValor;
 
 public class Grid extends Board {
 

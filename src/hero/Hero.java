@@ -31,14 +31,14 @@ public abstract class Hero extends Character {
     protected int id;
 
     public Hero() {
-        super(0,0);
+        super(0, 0);
         this.inventory = new ArrayList<>();
         this.HP = level * 100;
         this.baseHP = HP;
     }
 
     public Hero(String type, int id) {
-        super(0,0);
+        super(0, 0);
         this.type = type;
         this.id = id;
         this.inventory = new ArrayList<>();
@@ -48,7 +48,7 @@ public abstract class Hero extends Character {
     }
 
     public Hero(String name, String type, int id) {
-        super(0,0);
+        super(0, 0);
         this.name = name;
         this.type = type;
         this.id = id;
@@ -280,4 +280,5 @@ public abstract class Hero extends Character {
     
         }
     }
+
 }

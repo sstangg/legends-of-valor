@@ -2,6 +2,7 @@ package game;
 
 import core.Board;
 import core.Game;
+import core.Character;
 import grid.Grid;
 import grid.Block;
 
@@ -33,9 +34,12 @@ public class LegendsOfValor extends Game {
     private Hero[] heros;
     private List<Monster> monsters;
     private List<Item> marketStock; 
+    private int round;
+    // private int difficulty; //TODO: add difficulty
     
     public LegendsOfValor(Input input, int[] heroType) {
-        this.input  =input;
+        this.input = input;
+        this.round = 1;
         heros = new Hero[3];
         initializeHeros(heroType);
         initializeMonsters();
@@ -70,19 +74,20 @@ public class LegendsOfValor extends Game {
         return monsters.get(i);
     }
 
-    private boolean handleCommand(char command) {
-    switch (command) {
+    private boolean handleCommand(char command, int idx) {
+        System.out.println("idx: " + idx);
+        switch (command) {
         case 'W':
-            return attemptMove(-1, 0);
+            return attemptMove(idx, -1, 0);
 
         case 'A':
-            return attemptMove(0, -1);
+            return attemptMove(idx, 0, -1);
 
         case 'D':
-            return attemptMove(0, 1);
+            return attemptMove(idx, 0, 1);
 
         case 'S':
-            return attemptMove(1, 0);
+            return attemptMove(idx, 1, 0);
         case 'I':
             manageInventory();
             return false;
@@ -90,7 +95,7 @@ public class LegendsOfValor extends Game {
             manageInventory();
             return false;
         case 'M':
-            if (getHerosBlock().getType() == Block.Type.NEXUS) {
+            if (getCharactersBlock(heros[idx]).getType() == Block.Type.NEXUS) {
                 printMarketWelcome();
                 enterMarket();
             } else {
@@ -109,12 +114,12 @@ public class LegendsOfValor extends Game {
     }
 }
 
-    private void handleHerosInput() {
+    private void handleHerosMove(int idx) {
 
         while (true) {
 
             printBoard();
-            printHeroOptions();
+            printHeroOptions(idx);
 
             String inputStr = input.nextLine().trim().toUpperCase();
 
@@ -126,7 +131,7 @@ public class LegendsOfValor extends Game {
 
             char command = inputStr.charAt(0);
 
-            boolean completedMove = handleCommand(command);
+            boolean completedMove = handleCommand(command, idx);
             wait(2);
 
             if (completedMove) {
@@ -134,7 +139,7 @@ public class LegendsOfValor extends Game {
             }
         }
 
-        if (getHerosBlock().getType() == Block.Type.PLAIN) {
+        if (getCharactersBlock(heros[idx]).getType() == Block.Type.PLAIN) {
             if (rollDice(2) == 1) {
                 System.out.println("Oh no! Monsters on the loose! Entering battle now!!");
                 wait(2);
@@ -147,6 +152,100 @@ public class LegendsOfValor extends Game {
             }
         }
     }
+
+    private boolean handleMonstersMove(int idx) {
+        Monster monster = monsters.get(idx);
+
+        while (true) {
+            Hero target = hasHeroInRange(monster);
+            if (target != null) {
+                attackFromMonster(monster, target);
+                wait(2);
+                return true;
+            } else {
+                if (attemptMoveMonster(idx, -1, 0)) {
+                    wait (2);
+                    return true;
+                } else if (attemptMoveMonster(idx, 0, -1)) {
+                    wait (2);
+                    return true;
+                } else if (attemptMoveMonster(idx, 0, 1)) {
+                    wait (2);
+                    return true;
+                } else if (attemptMoveMonster(idx, 1, 0)) {
+                    wait (2);
+                    return true;
+                } else {
+                    System.out.println(monster.getName() + " couldn't move!");
+                    wait(2);
+                    return false;
+                }
+            }
+        }
+    }
+
+    private Hero hasHeroInRange(Monster monster) {   
+        for (Hero hero : heros) {
+    
+            if (hero.getHP() > 0) {
+                int distance = Math.abs(hero.getRow() - monster.getRow()) + Math.abs(hero.getCol() - monster.getCol());
+                if (distance <= 1) {
+                    System.out.println("Found hero: " + hero.getName() + "(" + hero.getRow() + "," + hero.getCol() + ") in range of " + monster.getName() + "!");
+                    return hero;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void attackFromMonster(Monster monster, Hero hero) {
+        System.out.println(monster.getName() + " is attacking " + hero.getName() + "!");
+        wait(2);
+
+        double damage = monster.getDamage(); 
+
+        double dodgeChance = hero.getAgility() * 0.002; // scaling dodge
+        dodgeChance = Math.min(dodgeChance, 0.5); 
+
+        if (Math.random() < dodgeChance) {
+            System.out.println(hero.getName() + " dodged the attack!");
+            return; 
+        }
+
+        hero.setHP((int) Math.max(0, hero.getHP() - damage));
+        
+        System.out.println(monster.getName() + " hit " + hero.getName() + " with " + (int)damage + " damage");
+
+        if (hero.getHP() == 0) {
+            System.out.println(hero.getName() + " was eliminated!");
+        }
+    }
+
+    private boolean attemptMoveMonster(int idx, int rowChange, int colChange) {
+        // System.out.println("Attempting move!");
+        Monster monster = monsters.get(idx);
+
+        int newRow = monster.getRow() + rowChange;
+        int newCol = monster.getCol() + colChange;
+
+        if (board.isValidMove(newRow, newCol)) {
+            System.out.println(monster.getName() + " (M" + monster.getId() + ") moved from (" + monster.getRow() + "," + monster.getCol() + ") to (" + newRow + "," + newCol + ")");
+
+            Block oldB = getCharactersBlock(monster);
+            oldB.moveMonsterOff();
+
+            Block newB = (Block) board.getTile(newRow,newCol);
+            newB.moveMonsterOn(monster);
+
+            monster.setPosition(newRow, newCol);
+            wait(2);
+            return true;
+        } else {
+            // System.out.println("You can't move there!");
+            return false;
+        }
+    }
+
 
     private int rollDice(int i) {
         Random random = new Random();
@@ -180,20 +279,19 @@ public class LegendsOfValor extends Game {
 
 
 
-    private void printHeroOptions() {
+    private void printHeroOptions(int idx) {
         System.out.println("Controls:");
         System.out.println("W/A/S/D - move");
         System.out.println("I/C - manage inventory (view info, equip/use items)");
         System.out.println("M - enter market (if on market tile)");
         System.out.println("Q - quit game");
         System.out.println("H - Help/Information");
-        System.out.printf("Your move: ");
+        System.out.printf(heros[idx].getName() + "'s' move: ");
     }
 
 
     private void startBattle() {
         initializeMonsters(); 
-        int round = 1;
 
         while (!(allHeroesDead() || allMonstersDead())) {
             System.out.println();
@@ -204,12 +302,10 @@ public class LegendsOfValor extends Game {
             printMonsters();
             System.out.println("=============================================");
 
-            herosTurn();
-            monstersTurn();
+            herosBattleTurn();
+            monstersBattleTurn();
 
             endOfRoundRecovery();
-
-            round++;
         }
 
         endBattle(); 
@@ -252,7 +348,7 @@ public class LegendsOfValor extends Game {
         return true;
     }
 
-    private void herosTurn() {
+    private void herosBattleTurn() {
         System.out.println("--- Heros' Turn ---");
         for (int i = 0; i < heros.length; i++) {
             if (heros[i].getHP() > 0) {
@@ -315,7 +411,7 @@ public class LegendsOfValor extends Game {
         return alive.get(new Random().nextInt(alive.size()));
     }
 
-    private void monstersTurn() {
+    private void monstersBattleTurn() {
         System.out.println("--- Monsters' Turn ---");
 
         for (Monster monster : monsters) {
@@ -567,7 +663,18 @@ public class LegendsOfValor extends Game {
         initializePlayers(board);
 
         while (!isDone()) {
-            handleHerosInput();
+            System.out.println("============HEROS' MOVE===============");
+            for (int i = 0; i < heros.length; i++) {
+                if (heros[i].getHP() > 0) {
+                    handleHerosMove(i);
+                }
+            }
+            System.out.println("============MONSTERS' MOVE===============");
+            for (int i = 0; i < monsters.size(); i++) {
+                if (monsters.get(i).getHP() > 0) {
+                    handleMonstersMove(i);
+                }
+            }
         }
      
         return false;
@@ -576,12 +683,21 @@ public class LegendsOfValor extends Game {
     private void initializePlayers(Board board) {
 
         // move heros and monsters onto their respective starting positions
-        ((Block) board.getTile(0, 0+rollDice(2))).moveHeroOn(getHero(0));
-        ((Block) board.getTile(0, 3+rollDice(2))).moveHeroOn(getHero(1));
-        ((Block) board.getTile(0, 6+rollDice(2))).moveHeroOn(getHero(2));
-        ((Block) board.getTile(board.getDim() - 1, 0+rollDice(2))).moveMonsterOn(getMonster(0));
-        ((Block) board.getTile(board.getDim() - 1, 3+rollDice(2))).moveMonsterOn(getMonster(1));
-        ((Block) board.getTile(board.getDim() - 1, 6+rollDice(2))).moveMonsterOn(getMonster(2));
+        move(getHero(0), 0, 0+rollDice(2));
+        move(getHero(1), 0, 3+rollDice(2));
+        move(getHero(2), 0, 6+rollDice(2));
+        move(getMonster(0), board.getDim() - 1, 0+rollDice(2));
+        move(getMonster(1), board.getDim() - 1, 3+rollDice(2));
+        move(getMonster(2), board.getDim() - 1, 6+rollDice(2));
+    }
+
+    private void move(Character ch, int row, int col) {
+        ch.setPosition(row, col);
+        if (ch instanceof Hero) {
+             ((Block) board.getTile(row, col)).moveHeroOn((Hero) ch);
+        } else if (ch instanceof Monster) {
+            ((Block) board.getTile(row, col)).moveMonsterOn((Monster) ch);
+        }
     }
 
     public boolean isDone() {
@@ -665,30 +781,30 @@ public class LegendsOfValor extends Game {
     }
 
 
-    private Block getHerosBlock() {
-        int row = heros[0].getRow();
-        int col = heros[0].getCol();
+    private Block getCharactersBlock(Character ch) {
+        int row = ch.getRow();
+        int col = ch.getCol();
         // System.out.printf("Heros currently at row: %d, col %d/n", row, col);
         return (Block) board.getTile(row,col);
     }
 
 
-    private boolean attemptMove(int rowChange, int colChange) {
-
-        int newRow = heros[0].getRow() + rowChange;
-        int newCol = heros[0].getCol() + colChange;
+    private boolean attemptMove(int idx, int rowChange, int colChange) {
+        System.out.println("Attempting hero;s move!");
+        int newRow = heros[idx].getRow() + rowChange;
+        int newCol = heros[idx].getCol() + colChange;
 
         if (board.isValidMove(newRow, newCol)) {
-            Block oldB = getHerosBlock();
-
-            for (Hero hero : heros) {
-                hero.moveTo(newRow, newCol);
-            }
+            System.out.println("Before move: " + heros[idx].getRow() + "," + heros[idx].getCol());
+            Block oldB = getCharactersBlock(heros[idx]);
 
             oldB.moveHeroOff();
 
             Block newB = (Block) board.getTile(newRow,newCol);
-            newB.moveHeroOn(heros[0]); //TO DO: move one hero at a time
+            newB.moveHeroOn(heros[idx]);
+
+            heros[idx].setPosition(newRow, newCol);
+            System.out.println("After move: " + heros[idx].getRow() + "," + heros[idx].getCol());
 
             return true;
         } else {
