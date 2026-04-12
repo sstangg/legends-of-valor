@@ -7,8 +7,8 @@ import iohandler.FileLoader;
 
 public class Spirit extends Monster {
     
-    public Spirit() {
-        super("Spirit");
+    public Spirit(int v) {
+        super("Spirit", v);
         List<Spirit> spirits = FileLoader.load("Legends_Monsters_and_Heroes/Spirits.txt", line -> Spirit.parse(line));
 
         if (spirits.isEmpty())
@@ -22,6 +22,7 @@ public class Spirit extends Monster {
         this.defenseValue = randomSpirit.defenseValue;
         this.dodgeAbility = randomSpirit.dodgeAbility;
         this.baseDamageValue = randomSpirit.baseDamageValue;
+        this.id = v;
     }
 
     public Spirit(String name, int level, int defenseValue, int dodgeAbility, int baseDamageValue) {

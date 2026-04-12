@@ -7,8 +7,8 @@ import iohandler.FileLoader;
 
 public class Sorcerer extends Hero {
 
-    public Sorcerer(String num) {
-        super("Sorcerer");
+    public Sorcerer(String num, int v) {
+        super("Sorcerer",v);
         List<Sorcerer> sorcerers = FileLoader.load("Legends_Monsters_and_Heroes/sorcerers.txt",line -> Sorcerer.parse(line));
 
         if (sorcerers.isEmpty())
@@ -28,8 +28,8 @@ public class Sorcerer extends Hero {
 
 
     
-    public Sorcerer(String name, int mana, int strength, int agility, int dexterity, int gold, int experience) {
-        super(name, "Paladin");
+    public Sorcerer(String name, int mana, int strength, int agility, int dexterity, int gold, int experience, int v) {
+        super(name, "Sorcerer", v);
         this.MP = mana;
         this.strength = strength;
         this.agility = agility;
@@ -60,6 +60,6 @@ public class Sorcerer extends Hero {
         int money = Integer.parseInt(parts[5]);
         int experience = Integer.parseInt(parts[6]);
 
-        return new Sorcerer(name, mana, strength, agility, dexterity, money, experience);
+        return new Sorcerer(name, mana, strength, agility, dexterity, money, experience, 0);
     }
 }

@@ -1,5 +1,6 @@
 package game;
 
+import core.Board;
 import core.Game;
 import grid.Grid;
 import grid.Block;
@@ -30,29 +31,43 @@ public class LegendsOfValor extends Game {
 
     private Input input;
     private Hero[] heros;
-    private Monster[] monsters;
+    private List<Monster> monsters;
     private List<Item> marketStock; 
     
     public LegendsOfValor(Input input, int[] heroType) {
         this.input  =input;
+        heros = new Hero[3];
+        initializeHeros(heroType);
+        initializeMonsters();
 
-        heros = new Hero[heroType.length];
+        loadMarketStock(2);
+    }
+
+    private void initializeHeros(int[] heroType) {
         String idx = "I";
+        int v = 1;
         for (int i = 0; i < heroType.length; i++) {
             switch (heroType[i]) {
             case 1:
-                heros[i] = new Warrior(idx);
+                heros[i] = new Warrior(idx,v);
                 break;
             case 2:
-                heros[i] = new Sorcerer(idx);
+                heros[i] = new Sorcerer(idx,v);
                 break;
             default:
-                heros[i] = new Paladin(idx);
+                heros[i] = new Paladin(idx,v);
             }
             idx += "I";
+            v++;
         }
+    }
 
-        loadMarketStock(2);
+    private Hero getHero(int i) {
+        return heros[i];
+    }
+
+    private Monster getMonster(int i) {
+        return monsters.get(i);
     }
 
     private boolean handleCommand(char command) {
@@ -139,23 +154,30 @@ public class LegendsOfValor extends Game {
     
     }
 
-    private void createMonsters() {
+    private void initializeMonsters() {
         int size = heros.length;
-        monsters = new Monster[size];
+        monsters = new ArrayList<>();
+        int num = 1;
         for (int i = 0; i < size; i++) {
-            int result = rollDice(3);
-            switch (result) {
-                case 1:
-                    monsters[i] = new Exoskeleton();
-                    break;
-                case 2:
-                    monsters[i] = new Spirit();
-                    break;
-                default:
-                    monsters[i] = new Dragon();
-            }
+            Monster m = createRandomMonster(num);
+            monsters.add(m); 
+            num++;
         }
     }
+
+    private Monster createRandomMonster(int idx) {
+        int result = rollDice(3);
+        switch (result) {
+            case 1:
+                return new Exoskeleton(idx);
+            case 2:
+                return new Spirit(idx);
+            default:
+                return new Dragon(idx);
+        }
+    }
+
+
 
 
     private void printHeroOptions() {
@@ -170,7 +192,7 @@ public class LegendsOfValor extends Game {
 
 
     private void startBattle() {
-        createMonsters(); 
+        initializeMonsters(); 
         int round = 1;
 
         while (!(allHeroesDead() || allMonstersDead())) {
@@ -362,7 +384,7 @@ public class LegendsOfValor extends Game {
 
     private void endBattle() {
         if (!allHeroesDead()) {
-            int num = monsters.length;
+            int num = monsters.size();
             monsters = null;
 
             int maxLevel = 0;
@@ -405,14 +427,15 @@ public class LegendsOfValor extends Game {
         }
 
         System.out.println("Select target monster:");
-        for (int i = 0; i < monsters.length; i++) {
-            if (monsters[i].getHP() > 0) {
-                System.out.printf("(%d) %s HP: %d%n", i+1, monsters[i].getName(), monsters[i].getHP());
+        for (int i = 0; i < monsters.size(); i++) {
+            Monster m = monsters.get(i);
+            if (m.getHP() > 0) {
+                System.out.printf("(%d) %s HP: %d%n", i+1, m.getName(), m.getHP());
             }
         }
 
-        int targetIdx = input.nextInt(1, monsters.length);
-        Monster target = monsters[targetIdx - 1];
+        int targetIdx = input.nextInt(1, monsters.size());
+        Monster target = monsters.get(targetIdx - 1);
 
         hero.use(spell);
 
@@ -541,12 +564,24 @@ public class LegendsOfValor extends Game {
     @Override
     public boolean play() {
         this.board = new Grid(8);
+        initializePlayers(board);
 
         while (!isDone()) {
             handleHerosInput();
         }
      
         return false;
+    }
+
+    private void initializePlayers(Board board) {
+
+        // move heros and monsters onto their respective starting positions
+        ((Block) board.getTile(0, 0+rollDice(2))).moveHeroOn(getHero(0));
+        ((Block) board.getTile(0, 3+rollDice(2))).moveHeroOn(getHero(1));
+        ((Block) board.getTile(0, 6+rollDice(2))).moveHeroOn(getHero(2));
+        ((Block) board.getTile(board.getDim() - 1, 0+rollDice(2))).moveMonsterOn(getMonster(0));
+        ((Block) board.getTile(board.getDim() - 1, 3+rollDice(2))).moveMonsterOn(getMonster(1));
+        ((Block) board.getTile(board.getDim() - 1, 6+rollDice(2))).moveMonsterOn(getMonster(2));
     }
 
     public boolean isDone() {
@@ -558,15 +593,16 @@ public class LegendsOfValor extends Game {
             return null;
         }
         System.out.println("Select target monster:");
-        for (int i = 0; i < monsters.length; i++) {
-            if (monsters[i].getHP() > 0) {
-                System.out.printf("(%d) %s HP: %d%n", i+1, monsters[i].getName(), monsters[i].getHP());
+        for (int i = 0; i < monsters.size(); i++) {
+            Monster m = monsters.get(i);
+            if (m.getHP() > 0) {
+                System.out.printf("(%d) %s HP: %d%n", i+1, m.getName(), m.getHP());
                 // monsters[i].print();
             }
         }
        
-        int option = input.nextInt(1,monsters.length);
-        Monster target = monsters[option-1];
+        int option = input.nextInt(1,monsters.size());
+        Monster target = monsters.get(option-1);
 
         wait(2);
         
@@ -605,7 +641,7 @@ public class LegendsOfValor extends Game {
             wait(2);
         }
 
-        return monsters[option-1];
+        return monsters.get(option-1);
     }
 
     private void wait(int sec) {
@@ -649,10 +685,10 @@ public class LegendsOfValor extends Game {
                 hero.moveTo(newRow, newCol);
             }
 
-            oldB.moveHerosOff();
+            oldB.moveHeroOff();
 
             Block newB = (Block) board.getTile(newRow,newCol);
-            newB.moveHerosOn();
+            newB.moveHeroOn(heros[0]); //TO DO: move one hero at a time
 
             return true;
         } else {

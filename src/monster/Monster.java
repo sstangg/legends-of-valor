@@ -13,13 +13,16 @@ public class Monster extends Character {
     protected double defenseValue;
     protected double dodgeAbility;
     protected String type;
+    protected int id;
 
-    public Monster(String name, int level) {
+
+    public Monster(String name, int level, int id) {
         super(-1,-1); //TODO: decide if setting position at intializing obj or when intializing board
         // super(name, level);
 
         this.name = name;
         this.HP = level * 100;
+        this.id = id;
 
         // base stats (shared baseline)
         // this.baseDamageValue = level * 10;
@@ -27,12 +30,29 @@ public class Monster extends Character {
         // this.dodgeAbility = level * 5;
     }
 
-    public Monster(String type) {
+    public Monster(String name) {
+        super(-1,-1);
+
+        this.name = name;
+    }
+
+
+    public Monster(String type, int id) {
         super(-1,-1);
         this.type = type;
+        this.id = id;
         this.HP = level * 100;
 
     }
+
+    public int getId(){
+        return id;
+    }
+
+    public void setId(int id){
+        this.id = id;
+    }
+
 
     public int getHP() {
         return HP;

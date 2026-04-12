@@ -3,9 +3,14 @@ package grid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import core.Board;
 import core.Tile;
+import hero.Paladin;
+import hero.Sorcerer;
+import hero.Warrior;
+import game.LegendsOfValor;
 
 public class Grid extends Board {
 
@@ -18,40 +23,42 @@ public class Grid extends Board {
     }
 
     private void initializeGrid() {
-        int total = grid.length * grid[0].length;
-        
-        int market = total * 3 / 10;
-        int inaccessible = total * 2 / 10;
-        int common = total - inaccessible - market - 2;
 
-        List<Block.Type> blocks = new ArrayList<>();
-
-        for (int i = 0; i < market; i++) {
-            blocks.add(Block.Type.NEXUS);
-        }
-        for (int i = 0; i < inaccessible; i++) {
-            blocks.add(Block.Type.INACCESSIBLE);
-        }
-        for (int i = 0; i < common; i++) {
-            blocks.add(Block.Type.COMMON);
-        }
-
-        Collections.shuffle(blocks);
-
-        grid[0][0] = new Block(0,0, Block.Type.COMMON); // fixed hero starting point
-        ((Block) grid[0][0]).moveHerosOn();
-
-        grid[1][0] = new Block(1,0, Block.Type.COMMON); // ensures there is always a way to exit 
-
-        int idx = 0;
+        // setup grid
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid.length; j++) {
-                if ((i == 0 && j == 0) || (i == 1 && j == 0)) {
+                if ((j == 2 || j == 5)) {
+                    grid[i][j] = new Block(i, j, Block.Type.BORDER);
                     continue;
                 }
-                grid[i][j] = new Block(i, j, blocks.get(idx++));
+                if ((i == 0 || i == grid.length - 1)) {
+                    grid[i][j] = new Block(i, j, Block.Type.NEXUS);
+                    continue;
+                }
+                int roll = rollDice(5);                    
+                switch (roll) {
+                    case 1:
+                        grid[i][j] = new Block(i, j, Block.Type.INACCESSIBLE);
+                        break;
+                    case 2:
+                        grid[i][j] = new Block(i, j, Block.Type.BUSH);
+                        break;
+                    case 3:
+                        grid[i][j] = new Block(i, j, Block.Type.CAVE);
+                        break;
+                    case 4:
+                        grid[i][j] = new Block(i, j, Block.Type.KOULOU);
+                        break;
+                    default:
+                        grid[i][j] = new Block(i, j, Block.Type.PLAIN);
+                }  
             }
         }
+    }
+
+    private int rollDice(int i) {
+        Random random = new Random();
+        return random.nextInt(i);
     }
 
     @Override
@@ -82,7 +89,7 @@ public class Grid extends Board {
         // Dynamically define puzzle border
         StringBuilder border = new StringBuilder("+");
         for (int i = 0; i < grid.length; i++) {
-            border.append(repeat('-', 3)); 
+            border.append(repeat('=', 7)); 
             border.append("+");
         }
         String borderString = border.toString();
@@ -102,13 +109,28 @@ public class Grid extends Board {
             Block b = (Block) t;
             
             if ( b == null) {
-                System.out.print(repeat(' ', 1 + 2)); // space for empty
+                System.out.print(repeat(' ', 7)); // space for empty
             } else {
-                System.out.print(" " + b.getSymbol() + " ");
+                String symbol = b.getSymbol();
+                System.out.print(center(symbol,7));
+                
             }
+                
             System.out.print("|");
         }
         System.out.println();
+    }
+
+    private String center(String text, int width) {
+        if (text.length() >= width) {
+            return text;
+        }
+
+        int padding = width - text.length();
+        int right = padding / 2;
+        int left = padding - right;
+
+        return repeat(' ', left) + text + repeat(' ', right);
     }
 
 }
