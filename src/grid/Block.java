@@ -46,11 +46,11 @@ public class Block extends Tile {
         return type != Type.INACCESSIBLE && type != Type.BORDER;
     }
 
-    public boolean hasHeros() {
+    public boolean hasHero() {
         return hero != null;
     }
 
-    public boolean hasMonsters() {
+    public boolean hasMonster() {
         return monster != null;
     }
 
