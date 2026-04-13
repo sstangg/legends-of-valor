@@ -48,8 +48,4 @@ public abstract class Character {
     public int getLane() {
         return lane;
     }
-
-    public void displayStats() {
-    }
-
 }

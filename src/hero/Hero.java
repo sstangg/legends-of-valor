@@ -187,6 +187,8 @@ public abstract class Hero extends Character {
     public void regain() {
         HP *= 1.1; 
         MP *= 1.1;
+        System.out.println(name + " regenerated 10% HP and MP");
+        System.out.println();
     }
 
     protected abstract void applyBonus();
@@ -279,6 +281,11 @@ public abstract class Hero extends Character {
             }
     
         }
+    }
+
+    public void respawn() {
+        resetToSpawnPosition();
+        System.out.println("--- " + name + "(H" + id + ") respawned at Nexus (" + spawnRow + "," + spawnCol + " ---");
     }
 
 }

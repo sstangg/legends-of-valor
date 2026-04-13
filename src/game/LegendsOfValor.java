@@ -37,12 +37,14 @@ public class LegendsOfValor extends Game {
     private int round;
 
     private final int[][] laneColumns = {{0,1}, {3,4}, {6,7}};
-    // private int difficulty; //TODO: add difficulty
+    private int difficulty; 
     
-    public LegendsOfValor(Input input, int[] heroType, int[] lane) {
+    public LegendsOfValor(Input input, int[] heroType, int[] lane, int difficulty) {
         this.input = input;
         this.round = 1;
         this.board = new Grid(8);
+        this.difficulty = difficulty;
+
         initializeHeros(heroType, lane);
         initializeMonsters(lane);
 
@@ -66,7 +68,7 @@ public class LegendsOfValor extends Game {
             default:
                 heros.add(new Paladin(idx,v));
             }
-            System.out.println("~ Hero " + (i+1) + ": " + heros.get(i).getName()+  " ~");
+            System.out.println("==== Hero " + (i+1) + ": " + heros.get(i).getName()+  " ====");
             wait(1);
             idx += "I";
             v++;
@@ -101,7 +103,6 @@ public class LegendsOfValor extends Game {
     }
 
     private boolean handleCommand(char command, int idx) {
-        System.out.println("idx: " + idx);
         Hero hero = heros.get(idx);
         switch (command) {
         case 'W':
@@ -112,6 +113,8 @@ public class LegendsOfValor extends Game {
             return attemptMove(idx, 0, 1);
         case 'S':
             return attemptMove(idx, 1, 0);
+        case 'P':
+            return true;
         case 'F':
             attackFrom(hero);
             return true;
@@ -165,25 +168,13 @@ public class LegendsOfValor extends Game {
             char command = inputStr.charAt(0);
 
             boolean completedMove = handleCommand(command, idx);
-            wait(2);
+            wait(1);
 
             if (completedMove) {
                 break; // only exiting loop after a valid move action is complete
             }
         }
-
-        if (getCharactersBlock(heros.get(idx)).getType() == Block.Type.PLAIN) {
-            if (rollDice(2) == 1) {
-                System.out.println("Oh no! Monsters on the loose! Entering battle now!!");
-                wait(2);
-                startBattle();
-                // then enter battle
-            } else {
-                System.out.println("No monsters! You are safe this time.");
-                System.out.println();
-                wait(2);
-            }
-        }
+        wait(2);
     }
 
     private boolean handleMonstersMove(int idx) {
@@ -223,7 +214,7 @@ public class LegendsOfValor extends Game {
             if (hero.getHP() > 0) {
                 int distance = Math.abs(hero.getRow() - monster.getRow()) + Math.abs(hero.getCol() - monster.getCol());
                 if (distance <= 1) {
-                    System.out.println("Found hero: " + hero.getName() + "(" + hero.getRow() + "," + hero.getCol() + ") in range of " + monster.getName() + "!");
+                    // System.out.println("Found hero: " + hero.getName() + "(" + hero.getRow() + "," + hero.getCol() + ") in range of " + monster.getName() + "!");
                     return hero;
                 }
             }
@@ -232,7 +223,9 @@ public class LegendsOfValor extends Game {
     }
 
     private void attackFromMonster(Monster monster, Hero hero) {
-        System.out.println(monster.getName() + " is attacking " + hero.getName() + "!");
+        System.out.println(monster.getName() + " attacks " + hero.getName() + "!");
+        System.out.println();
+
         wait(2);
 
         double damage = monster.getDamage(); 
@@ -241,7 +234,8 @@ public class LegendsOfValor extends Game {
         dodgeChance = Math.min(dodgeChance, 0.5); 
 
         if (Math.random() < dodgeChance) {
-            System.out.println(hero.getName() + " dodged the attack!");
+            System.out.println("---" + hero.getName() + " dodged the attack! ---");
+            System.out.println();
             return; 
         }
 
@@ -262,6 +256,7 @@ public class LegendsOfValor extends Game {
         int newCol = monster.getCol() + colChange;
 
         if (board.isValidMove(newRow, newCol)) {
+            System.out.println();
             System.out.println(monster.getName() + " (M" + monster.getId() + ") moved from (" + monster.getRow() + "," + monster.getCol() + ") to (" + newRow + "," + newCol + ")");
 
             Block oldB = getCharactersBlock(monster);
@@ -342,10 +337,6 @@ public class LegendsOfValor extends Game {
         return m;
     }
 
-    private void respawnHero(Hero hero) {
-        hero.resetToSpawnPosition();
-    }
-
 
     private void printHeroOptions(int idx) {
         System.out.println();
@@ -367,29 +358,6 @@ public class LegendsOfValor extends Game {
         System.out.println("H - Help/Information");
         System.out.println("Q - Quit game");
         System.out.printf("Your move: ");
-    }
-
-
-    private void startBattle() {
-        // initializeMonsters(); 
-
-        while (!(allHeroesDead() || allMonstersDead())) {
-            System.out.println();
-            System.out.println("----- ROUND " + round + " -----");
-            System.out.println("=============================================");
-            printHeros();
-            System.out.println();
-            printMonsters();
-            System.out.println("=============================================");
-
-            herosBattleTurn();
-            monstersBattleTurn();
-
-            endOfRoundRecovery();
-        }
-
-        endBattle(); 
-
     }
 
     private void printHeros() {
@@ -551,34 +519,43 @@ public class LegendsOfValor extends Game {
 
 
     private void endOfRoundRecovery() {
+        System.out.println("[END OF ROUND " + round + "]");
         for (Hero hero : heros) {
             if (hero.getHP() > 0) {
                 hero.regain();
-            } 
-        }
-    }
-
-    private void endBattle() {
-        if (!allHeroesDead()) {
-            int num = monsters.size();
-            monsters = null;
-
-            int maxLevel = 0;
-            for (Hero hero : heros) {
-                // heros that didn't faint level up
-                if (hero.getHP() > 0) {
-                    hero.levelUp(num);
-                    if (maxLevel < hero.getLevel()) {
-                        maxLevel = hero.getLevel();
-                    }
-                } else { // heros that fainted get their HP reset
-                    hero.setHP(hero.getBaseHP()); 
-                }
+            } else {
+                hero.respawn();
             }
-    
-            loadMarketStock(maxLevel);
+        }
+
+        if (round + 1 % difficulty == 0) {
+            spawnMonster(1);
+            spawnMonster(2);
+            spawnMonster(3);
         }
     }
+
+    // private void endBattle() {
+    //     if (!allHeroesDead()) {
+    //         int num = monsters.size();
+    //         monsters = null;
+
+    //         int maxLevel = 0;
+    //         for (Hero hero : heros) {
+    //             // heros that didn't faint level up
+    //             if (hero.getHP() > 0) {
+    //                 hero.levelUp(num);
+    //                 if (maxLevel < hero.getLevel()) {
+    //                     maxLevel = hero.getLevel();
+    //                 }
+    //             } else { // heros that fainted get their HP reset
+    //                 hero.setHP(hero.getBaseHP()); 
+    //             }
+    //         }
+    
+    //         loadMarketStock(maxLevel);
+    //     }
+    // }
 
     private void castSpell(Hero hero) {
         if (hero.getSpells() == null || hero.getSpells().isEmpty()) {
@@ -743,20 +720,24 @@ public class LegendsOfValor extends Game {
         initializePlayers(board);
         
         while (!isDone()) {
+            wait(2);
             System.out.println();
             System.out.println("[ROUND " + round + "]");
+            wait(2);
             System.out.println("============HEROS' MOVE===============");
             for (int i = 0; i < heros.size(); i++) {
                 if (heros.get(i).getHP() > 0) {
                     handleHerosMove(i);
                 }
             }
+            System.out.println();
             System.out.println("============MONSTERS' MOVE===============");
             for (int i = 0; i < monsters.size(); i++) {
                 if (monsters.get(i).getHP() > 0) {
                     handleMonstersMove(i);
                 }
             }
+            endOfRoundRecovery();
             round++;
         }
      
@@ -884,19 +865,16 @@ public class LegendsOfValor extends Game {
     private Block getCharactersBlock(Character ch) {
         int row = ch.getRow();
         int col = ch.getCol();
-        // System.out.printf("Heros currently at row: %d, col %d/n", row, col);
         return (Block) board.getTile(row,col);
     }
 
 
     private boolean attemptMove(int idx, int rowChange, int colChange) {
-        System.out.println("Attempting hero;s move!");
         int newRow = heros.get(idx).getRow() + rowChange;
         int newCol = heros.get(idx).getCol() + colChange;
         Block b = (Block) board.getTile(newRow, newCol);
 
         if (board.isValidMove(newRow, newCol) && !((Block) b).hasHero()) {
-            System.out.println("Before move: " + heros.get(idx).getRow() + "," + heros.get(idx).getCol());
             Block oldB = getCharactersBlock(heros.get(idx));
 
             oldB.moveHeroOff();
@@ -905,8 +883,6 @@ public class LegendsOfValor extends Game {
             newB.moveHeroOn(heros.get(idx));
 
             heros.get(idx).setPosition(newRow, newCol);
-            System.out.println("After move: " + heros.get(idx).getRow() + "," + heros.get(idx).getCol());
-
             return true;
         } else {
             System.out.println("You can't move there!");
@@ -1071,7 +1047,7 @@ public class LegendsOfValor extends Game {
             case 'Q':
                 quitGame();
             case 'E':
-                manageInventory();
+                return;
             default:
                 return;
         }

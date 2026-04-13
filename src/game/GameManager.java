@@ -12,6 +12,13 @@ public class GameManager {
         int[] heroTypes = new int[3]; // 3 heroes
         int[] heroLanes = new int[3]; // 3 heroes
 
+        System.out.println("");
+        System.out.println("Select difficulty:");
+        System.out.println("1. Easy (monsters spawn every 5 rounds)");
+        System.out.println("2. Medium (monsters spawn every 4 rounds)");
+        System.out.println("3. Hard (monsters spawn every 3 round)");
+        int difficulty = input.nextInt("Choice (1-3): ", 1, 3);
+
         for (int i = 0; i < 3; i++) {
             System.out.printf("Select type for Hero " + (i+1) + " (1: Warrior, 2: Sorcerer, 3: Paladin): ");
             heroTypes[i] = input.nextInt("",1,3);
@@ -40,7 +47,7 @@ public class GameManager {
             System.out.println("The game will start shortly with the following heros:");
             System.out.println();
 
-            Game game = new LegendsOfValor(input, heroTypes, heroLanes);
+            Game game = new LegendsOfValor(input, heroTypes, heroLanes, difficulty);
             
             won = game.play();
             if (won) {
