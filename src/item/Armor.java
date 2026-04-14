@@ -36,9 +36,4 @@ public class Armor extends Item {
     public void print() {
         System.out.println("[Armor] " + name + " (10/10) (Price: " + price + ", Level: " + level + ", DamageReduction: " + damageReduction + ")");
     }
-
-    @Override
-    public String getName() {
-        return name;
-    }
 }

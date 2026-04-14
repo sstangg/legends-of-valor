@@ -33,12 +33,6 @@ public class Weapon extends Item {
     public void print() {
         System.out.println("[Weapon] " + name + " (10/10) (Price: " + price + ", Level: " + level + ", Damage: " + damage + ", Hands:" + hands + ")");
     }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
     public int getHands() {
         return hands;
     }
