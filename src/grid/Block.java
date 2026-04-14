@@ -7,8 +7,6 @@ import monster.Monster;
 public class Block extends Tile {
     public enum Type {
         INACCESSIBLE,
-        // MARKET, // TODO: delete when refactored
-        // COMMON, // TODO: delete when refactored
         // TODO: implement tile spaces across grid, gameplay
         NEXUS, // same as market
         OBSTACLE,
@@ -45,7 +43,6 @@ public class Block extends Tile {
     public boolean isAccessible() {
         return type != Type.INACCESSIBLE && type != Type.BORDER;
     }
-
     public boolean hasHero() {
         return hero != null;
     }

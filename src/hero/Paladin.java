@@ -9,7 +9,7 @@ public class Paladin extends Hero {
 
     public Paladin(String num, int v) {
         super("Paladin", v);
-        List<Paladin> paladins = FileLoader.load("Legends_Monsters_and_Heroes/paladins.txt", line -> Paladin.parse(line));
+        List<Paladin> paladins = FileLoader.load("Legends_of_Valor/paladins.txt", line -> Paladin.parse(line));
 
         if (paladins.isEmpty())
             throw new RuntimeException("No paladins found in file!");

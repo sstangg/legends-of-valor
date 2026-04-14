@@ -9,7 +9,7 @@ public class Spirit extends Monster {
     
     public Spirit(int v) {
         super("Spirit", v);
-        List<Spirit> spirits = FileLoader.load("Legends_Monsters_and_Heroes/Spirits.txt", line -> Spirit.parse(line));
+        List<Spirit> spirits = FileLoader.load("Legends_of_Valor/Spirits.txt", line -> Spirit.parse(line));
 
         if (spirits.isEmpty())
             throw new RuntimeException("No spirits found in file!");

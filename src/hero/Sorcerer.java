@@ -9,7 +9,7 @@ public class Sorcerer extends Hero {
 
     public Sorcerer(String num, int v) {
         super("Sorcerer",v);
-        List<Sorcerer> sorcerers = FileLoader.load("Legends_Monsters_and_Heroes/sorcerers.txt",line -> Sorcerer.parse(line));
+        List<Sorcerer> sorcerers = FileLoader.load("Legends_of_Valor/sorcerers.txt", line -> Sorcerer.parse(line));
 
         if (sorcerers.isEmpty())
             throw new RuntimeException("No sorcerers found in file!");

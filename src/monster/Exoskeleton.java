@@ -8,7 +8,7 @@ import iohandler.FileLoader;
 public class Exoskeleton extends Monster {
     public Exoskeleton(int v) {
         super("Exoskeleton", v);
-        List<Exoskeleton> exoskeletons = FileLoader.load("Legends_Monsters_and_Heroes/Exoskeletons.txt", line -> Exoskeleton.parse(line));
+        List<Exoskeleton> exoskeletons = FileLoader.load("Legends_of_Valor/Exoskeletons.txt", line -> Exoskeleton.parse(line));
 
         if (exoskeletons.isEmpty())
             throw new RuntimeException("No exoskeletons found in file!");

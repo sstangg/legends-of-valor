@@ -27,7 +27,7 @@ public class GameManager {
             if (i == 2) {
                 while (true) {
                     if (heroLanes[0] == heroLanes[1] && heroLanes[1] == heroLanes[2]) {
-                        System.out.printf("Cannot have more than 2 heros in the same lane. Please choose a different lane for Hero 3: ");
+                        System.out.printf("Cannot have more than 2 heroes in the same lane. Please choose a different lane for Hero 3: ");
                         heroLanes[2] = input.nextInt("",1,3);
                     } else {
                         break;
@@ -44,7 +44,7 @@ public class GameManager {
             System.out.printf("Welcome to Legends of Valor %s!%n", name);
             System.out.println("Prepare yourself for new adventures and challenges ahead!");
             System.out.println();
-            System.out.println("The game will start shortly with the following heros:");
+            System.out.println("The game will start shortly with the following heroes:");
             System.out.println();
 
             Game game = new LegendsOfValor(input, heroTypes, heroLanes, difficulty);

@@ -58,6 +58,17 @@ public class Grid extends Board {
         return grid[row][col];
     }
 
+    // get left / right adjacent accessible block to the position inputted
+    public Block getAdjacentBlock(int r, int c) {
+        Block adjacentBlock = null;
+        if (c > 0 && this.getTile(r, c-1).isAccessible()) {
+            adjacentBlock = ((Block) this.getTile(r, c-1));
+        }else if (c< this.dim - 1 && this.getTile(r, c+1).isAccessible()) {
+            adjacentBlock = ((Block) this.getTile(r, c+1));
+        }
+        return adjacentBlock;
+    }
+
     @Override
     public boolean isValidMove(int row, int col) {
         if (row < 0 || col < 0 || row >= grid.length || col >= grid.length) {

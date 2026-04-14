@@ -10,7 +10,7 @@ public class Warrior extends Hero {
     public Warrior(String num, int v) {
         super("Warrior", v);
         // load all warriors 
-        List<Warrior> warriors = FileLoader.load("Legends_Monsters_and_Heroes/warriors.txt", line -> Warrior.parse(line));
+        List<Warrior> warriors = FileLoader.load("Legends_of_Valor/warriors.txt", line -> Warrior.parse(line));
 
         if (warriors.isEmpty()) {
             throw new RuntimeException("No warriors found in file!");

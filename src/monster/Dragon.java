@@ -8,7 +8,7 @@ import iohandler.FileLoader;
 public class Dragon extends Monster {
     public Dragon(int v) {
         super("Dragon", v);
-        List<Dragon> dragons = FileLoader.load("Legends_Monsters_and_Heroes/Dragons.txt", line -> Dragon.parse(line));
+        List<Dragon> dragons = FileLoader.load("Legends_of_Valor/Dragons.txt", line -> Dragon.parse(line));
 
         if (dragons.isEmpty())
             throw new RuntimeException("No dragons found in file!");
