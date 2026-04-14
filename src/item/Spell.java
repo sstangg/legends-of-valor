@@ -22,7 +22,7 @@ public class Spell extends Item {
         int damages = Integer.parseInt(parts[3]);
         int manaCosts = Integer.parseInt(parts[4]);
 
-        if (level < currLevel) { //TODO:fix!
+        if (level <= currLevel) { //TODO:fix!
             return new Spell(name, cost, level, damages, manaCosts, type);
         }
         return null;

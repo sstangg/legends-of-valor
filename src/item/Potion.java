@@ -24,7 +24,7 @@ public class Potion extends Item {
         String attributeAffected = parts[4];
 
         
-        if (level < currLevel) { //TODO:fix!
+        if (level <= currLevel) { //TODO:fix!
             return new Potion(name, cost, level, attributeIncrease, attributeAffected);
         }
 

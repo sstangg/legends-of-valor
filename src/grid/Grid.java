@@ -30,7 +30,7 @@ public class Grid extends Board {
                 int roll = rollDice(5);                    
                 switch (roll) {
                     case 1:
-                        grid[i][j] = new Block(i, j, Block.Type.INACCESSIBLE);
+                        grid[i][j] = new Block(i, j, Block.Type.OBSTACLE);
                         break;
                     case 2:
                         grid[i][j] = new Block(i, j, Block.Type.BUSH);

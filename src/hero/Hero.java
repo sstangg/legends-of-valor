@@ -35,6 +35,7 @@ public abstract class Hero extends Character {
         this.inventory = new ArrayList<>();
         this.HP = level * 100;
         this.baseHP = HP;
+        this.level = 1;
     }
 
     public Hero(String type, int id) {
@@ -44,6 +45,7 @@ public abstract class Hero extends Character {
         this.inventory = new ArrayList<>();
         this.HP = level * 100;
         this.baseHP = HP;
+        this.level = 1;
 
     }
 
@@ -55,6 +57,7 @@ public abstract class Hero extends Character {
         this.inventory = new ArrayList<>();
         this.HP = level * 100;
         this.baseHP = HP;
+        this.level = 1;
 
     }
 
@@ -285,7 +288,7 @@ public abstract class Hero extends Character {
 
     public void respawn() {
         resetToSpawnPosition();
-        System.out.println("--- " + name + "(H" + id + ") respawned at Nexus (" + spawnRow + "," + spawnCol + " ---");
+        System.out.println("--- " + name + "(H" + id + ") respawned at Nexus (" + spawnRow + "," + spawnCol + ") ---");
     }
 
 }

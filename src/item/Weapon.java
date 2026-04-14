@@ -23,7 +23,7 @@ public class Weapon extends Item {
         int level = Integer.parseInt(parts[2]);
         int damages = Integer.parseInt(parts[3]);
         int reqHands = Integer.parseInt(parts[4]);
-        if (level < currLevel) { //TODO:fix!
+        if (level <= currLevel) { //TODO:fix!
             return new Weapon(name, cost, level, damages, reqHands);
         }
         return null;

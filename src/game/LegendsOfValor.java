@@ -29,7 +29,6 @@ import monster.Monster;
 
 
 public class LegendsOfValor extends Game {
-
     private Input input;
     private List<Hero> heros;
     private List<Monster> monsters;
@@ -48,7 +47,7 @@ public class LegendsOfValor extends Game {
         initializeHeros(heroType, lane);
         initializeMonsters(lane);
 
-        loadMarketStock(2);
+        loadMarketStock(1);
     }
 
     private void initializeHeros(int[] heroType, int[] lane) {
@@ -116,6 +115,8 @@ public class LegendsOfValor extends Game {
         case 'I':
             displayInfo();
             return false;
+        case 'E':
+            return manageInventory();
         case 'P':
             return true;
         case 'F':
@@ -129,6 +130,7 @@ public class LegendsOfValor extends Game {
         case 'R':
             return recall(hero);
         case 'M':
+            // TODO: only fire at Nexus
             if (getCharactersBlock(heros.get(idx)).getType() == Block.Type.NEXUS) {
                 printMarketWelcome();
                 enterMarket();
@@ -340,13 +342,14 @@ public class LegendsOfValor extends Game {
     private void printHeroOptions(int idx) {
         System.out.println();
         System.out.println("===== " + heros.get(idx).getName() + "'s Turn =====");
-        System.out.println("Position: Row " + heros.get(idx).getRow() + ", Col " + heros.get(idx).getCol() + " | Lane: " + (heros.get(idx).getLane()));
-        System.out.println("HP: " + heros.get(idx).getHP() + " | MP: " + heros.get(idx).getMP() + " | Gold: " + heros.get(idx).getGold());
+        System.out.println("Position: Row " + heros.get(idx).getRow() + ", Col " + heros.get(idx).getCol() + " | Lane: " + (heros.get(idx).getLane()+1));
+        System.out.println("HP: " + heros.get(idx).getHP() + " | MP: " + heros.get(idx).getMP() + " | Gold: " + heros.get(idx).getGold() + " | Level: " + heros.get(idx).getLevel());
         System.out.println();
 
         System.out.println("Controls:");
         System.out.println("W/A/S/D - Move (up/left/down/right)");
         System.out.println("I - Hero Info/Inventory");
+        System.out.println("E - Equip/Unequip");
         System.out.println("P - Pass turn");
         System.out.println("F - Attack");
         System.out.println("C - Cast Spell");
@@ -474,7 +477,7 @@ public class LegendsOfValor extends Game {
             if (hero.getHP() > 0) {
                 hero.regain();
             } else {
-                hero.respawn();
+                recall(hero);
             }
         }
 
@@ -508,16 +511,13 @@ public class LegendsOfValor extends Game {
     // }
     // calculate whether character is in range
     private static boolean inRange(int lane1, int row1, int lane2, int row2) {
-        if (lane1 < 0 || row1 < 1 || lane2 < 0 || row2 < 1 || lane1 > 2 || row1 > 7 || lane2 > 2 || row2 > 7) {
-            throw new IllegalArgumentException();
-        }
-        return lane1 == lane2 && Math.abs(row1 - row2)> 1;
+        return lane1 == lane2 && Math.abs(row1 - row2)<= 1;
     }
     // locates all in range monsters for a hero to attack / cast a spell
     // prompts users to select an in range monster for the hero to target.
     private Monster targetMonster(Hero hero) {
         List<Monster> inRangeMonsters = new ArrayList<>();
-        for (int i = 0; i < inRangeMonsters.size(); i++) {
+        for (int i = 0; i < monsters.size(); i++) {
             Monster m = inRangeMonsters.get(i);
             if (m.getHP() > 0 && inRange(hero.getLane(), hero.getRow(), m.getLane(), m.getRow())) {
                 inRangeMonsters.add(m);
@@ -700,6 +700,11 @@ public class LegendsOfValor extends Game {
             for (int i = 0; i < heros.size(); i++) {
                 if (heros.get(i).getHP() > 0) {
                     handleHerosMove(i);
+                    if (heros.get(i).getRow() == 0) {
+                        printBoard();
+                        complete = true;
+                        return true; // TODO: heroes won
+                    }
                 }
             }
             System.out.println();
@@ -707,6 +712,12 @@ public class LegendsOfValor extends Game {
             for (int i = 0; i < monsters.size(); i++) {
                 if (monsters.get(i).getHP() > 0) {
                     handleMonstersMove(i);
+                    /*
+                    if (monsters.get(i).getRow() == board.getDim()-1) {
+                        printBoard();
+                        complete = true;
+                        return false; // heroes lost
+                    }*/
                 }
             }
             endOfRoundRecovery();
@@ -754,7 +765,7 @@ public class LegendsOfValor extends Game {
     }
 
     public boolean isDone() {
-        return false; // game runs indefinitely
+        return false; // TODO: change that game runs indefinitely
     }
     private boolean attackFrom(Hero hero) {
         if (hero.getInventory() == null) {
@@ -817,12 +828,6 @@ public class LegendsOfValor extends Game {
             System.err.println("Thread was interrupted: " + e.getMessage());
         }
     }
-
-    private void reviveHeros() {
-        // TODO: at the end of each round, heros that have not fainted regain some of their HP and mana
-        // A fainted hero is revived with half of their HP and mana, but they will not gain any gold or experience.
-    }
-
     @Override
     public void printBoard() {
         board.print();
@@ -838,16 +843,19 @@ public class LegendsOfValor extends Game {
         if (rowChange + colChange > 1) {
             throw new IllegalArgumentException("Cannot move diagonally or more than 1 block at once!");
         }
+
         int oldRow = heros.get(idx).getRow();
         int oldCol = heros.get(idx).getCol();
         int newRow = oldRow + rowChange;
         int newCol = oldCol + colChange;
+
         // TODO: cannot move beyond monster without killing it
-        // if adjacent, cannot move forward. if currently beside a monster
+        // if monster is on an adjacent or current tile, hero cannot move forward without killing it
         if (!board.isValidMove(newRow, newCol) || ((Block) board.getTile(newRow, newCol)).hasHero()) {
             System.out.println("You can't move there!");
             return false;
-        } else if (rowChange >= 1 && ((Grid)board).getAdjacentBlock(oldRow, oldCol).hasMonster()) {
+        } else if (rowChange >= 1 && (((Grid)board).getAdjacentBlock(oldRow, oldCol).hasMonster() ||
+                ((Block)board.getTile(oldRow, oldCol)).hasMonster())) {
             System.out.println("You cannot move forward past a monster without killing it.");
             return false;
         }
@@ -1044,7 +1052,7 @@ public class LegendsOfValor extends Game {
         System.out.printf("Enter item to buy: ");
         List<Item> inventory = hero.getInventory();
         int val = input.nextInt(1, marketStock.size());
-        Item item = marketStock.get(val-1);
+        Item item = marketStock.get(val);
 
         if (hero.getGold() < item.getPrice()) {
             System.out.println(hero.getName() + " did not have sufficient funds.");
@@ -1123,7 +1131,9 @@ public class LegendsOfValor extends Game {
         for (Hero h : heros) {
             if (h.getHP() > 0 && h.getLane() != hero.getLane()) { // must be a different lane
                 alive.add(h);
-                lanes.add(h.getLane());
+                if (!lanes.contains(h.getLane())) {
+                    lanes.add(h.getLane());
+                }
             }
         }
 
@@ -1182,10 +1192,14 @@ public class LegendsOfValor extends Game {
 
     //TODO: recall
     private boolean recall(Hero hero) {
-        if (hero.getRow() == hero.getSpawnRow() && hero.getCol() == hero.getSpawnCol()) {
+        Block oldBlock = ((Block)board.getTile(hero.getRow(), hero.getCol()));
+        Block newBlock = ((Block)board.getTile(hero.getSpawnRow(), hero.getSpawnCol()));
+        if (oldBlock.equals(newBlock)) {
             return false;
         }
+        oldBlock.moveHeroOff();
         hero.respawn();
+        newBlock.moveHeroOn(hero);
         return true;
     }
 

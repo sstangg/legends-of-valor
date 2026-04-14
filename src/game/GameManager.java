@@ -27,7 +27,7 @@ public class GameManager {
             if (i == 2) {
                 while (true) {
                     if (heroLanes[0] == heroLanes[1] && heroLanes[1] == heroLanes[2]) {
-                        System.out.printf("Cannot have more than 2 heroes in the same lane. Please choose a different lane for Hero 3: ");
+                        System.out.printf("Cannot begin with more than 2 heroes in the same lane. Please choose a different lane for Hero 3: ");
                         heroLanes[2] = input.nextInt("",1,3);
                     } else {
                         break;
@@ -52,6 +52,8 @@ public class GameManager {
             won = game.play();
             if (won) {
                 System.out.println("Congrats you won!");
+            } else {
+                System.out.println("Sorry, you lost!");
             }
             playing = askReplay();
         }

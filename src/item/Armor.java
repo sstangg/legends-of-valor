@@ -25,7 +25,7 @@ public class Armor extends Item {
         int level = Integer.parseInt(parts[2]);
         int damageReduction = Integer.parseInt(parts[3]);
 
-        if (level < currLevel) { //TODO:fix!
+        if (level <= currLevel) { //TODO:fix!
             return new Armor(name, cost, level, damageReduction);
         }
 

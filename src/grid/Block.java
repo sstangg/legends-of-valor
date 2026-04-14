@@ -7,7 +7,6 @@ import monster.Monster;
 public class Block extends Tile {
     public enum Type {
         INACCESSIBLE,
-        // TODO: implement tile spaces across grid, gameplay
         NEXUS, // same as market
         OBSTACLE,
         PLAIN, // same as common
@@ -41,12 +40,19 @@ public class Block extends Tile {
 
     @Override
     public boolean isAccessible() {
-        return type != Type.INACCESSIBLE && type != Type.BORDER;
+        return type != Type.OBSTACLE && type != Type.INACCESSIBLE && type != Type.BORDER;
     }
     public boolean hasHero() {
         return hero != null;
     }
 
+    public boolean removeObstacle() {
+        if (type == Type.OBSTACLE) {
+            type = Type.PLAIN;
+            return true;
+        }
+        return false; // not an obstacle
+    }
     public boolean hasMonster() {
         return monster != null;
     }
@@ -86,9 +92,9 @@ public class Block extends Tile {
 
         switch (type) {
             case BORDER: return "███████";
-            case INACCESSIBLE: return "X";
+            case INACCESSIBLE: return "I";
             case NEXUS: return "N";
-            case OBSTACLE: return "O";
+            case OBSTACLE: return "X";
             case BUSH: return "B";
             case CAVE: return "C";
             case KOULOU: return "K";

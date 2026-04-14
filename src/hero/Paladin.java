@@ -22,20 +22,18 @@ public class Paladin extends Hero {
         this.agility = randomPaladin.agility;
         this.MP = randomPaladin.MP;
         this.gold = randomPaladin.gold;
-        this.level = randomPaladin.level;
         this.experience = randomPaladin.experience;
         this.HP = this.level * 100;
     }
 
     
-    public Paladin(String name, int strength, int dexterity, int agility, int mp, int gold, int experience, int level, int v) {
+    public Paladin(String name, int strength, int dexterity, int agility, int mp, int gold, int experience, int v) {
         super(name, "Paladin", v);
         this.strength = strength;
         this.dexterity = dexterity;
         this.agility = agility;
         this.MP = mp;
         this.gold = gold;
-        this.level = level;
         this.experience = experience;
         this.HP = this.level * 100;
     }
@@ -61,6 +59,6 @@ public class Paladin extends Hero {
         int money = Integer.parseInt(parts[5]);
         int experience = Integer.parseInt(parts[6]);
 
-        return new Paladin(name, strength, dexterity, agility, mana, money, experience, 1, 0);
+        return new Paladin(name, strength, dexterity, agility, mana, money, experience, 0);
     }
 }
