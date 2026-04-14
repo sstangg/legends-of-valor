@@ -1,34 +1,40 @@
 package grid;
 
 import core.Tile;
+import hero.Hero;
+import monster.Monster;
 
 public class Block extends Tile {
     public enum Type {
         INACCESSIBLE,
-        MARKET, // TODO: delete when refactored
-        COMMON, // TODO: delete when refactored
+        // MARKET, // TODO: delete when refactored
+        // COMMON, // TODO: delete when refactored
         // TODO: implement tile spaces across grid, gameplay
         NEXUS, // same as market
         OBSTACLE,
         PLAIN, // same as common
         BUSH,
         CAVE,
-        KOULOU
+        KOULOU,
+        BORDER
     }
 
     private Type type;
-    boolean hasHeros;
-
+    private Hero hero;
+    private Monster monster;
+    
     public Block(int row, int col) {
         super(row,col);
         this.type = null;
-        this.hasHeros = false;
+        this.hero = null;
+        this.monster = null;
     }
 
     public Block(int row, int col, Type type) {
         super(row,col);
         this.type = type;
-        this.hasHeros = false;
+        this.hero = null;
+        this.monster = null;
     }
 
     public Type getType() {
@@ -37,40 +43,58 @@ public class Block extends Tile {
 
     @Override
     public boolean isAccessible() {
-        return type != Type.INACCESSIBLE;
-    }
-    public void moveHerosOn() {
-        hasHeros = true;
+        return type != Type.INACCESSIBLE && type != Type.BORDER;
     }
 
-    public void moveHerosOff() {
-        hasHeros = false;
+    public boolean hasHero() {
+        return hero != null;
     }
 
-    // public boolean hasHeros() {
-    //     return hasHeros;
-    // }
+    public boolean hasMonster() {
+        return monster != null;
+    }
 
+    public void moveHeroOn(Hero hero) {
+        this.hero = hero;
+    }
 
+    public void moveHeroOff() {
+        this.hero = null;
+    }
 
-    // @Override //TODO: do we need this?
-    // public String print() {
-    //     switch (type) {
-    //         case INACCESSIBLE: return "X";
-    //         case MARKET: return "M";
-    //         case COMMON: return " ";
-    //         default: return " ";
-    //     }
-    // }
+    public void moveMonsterOn(Monster monster) {
+        this.monster = monster;
+    }
+
+    public void moveMonsterOff() {
+        this.monster = null;
+    }
+
+    public Hero getHero() {
+        return hero;
+    }
+
+    public Monster getMonster() {
+        return monster;
+    }
 
     public String getSymbol() {
-        if (hasHeros) {
-            return "P";
+        if (hero != null && monster != null) {
+            return "H" + hero.getId() + " M" + monster.getId(); // both hero and monster present
+        } else if (hero != null) {
+            return "H" + hero.getId(); 
+        } else if (monster != null) {
+            return "M" + monster.getId(); 
         }
+
         switch (type) {
+            case BORDER: return "███████";
             case INACCESSIBLE: return "X";
             case NEXUS: return "N";
-            // TODO: add more cases
+            case OBSTACLE: return "O";
+            case BUSH: return "B";
+            case CAVE: return "C";
+            case KOULOU: return "K";
             case PLAIN: return " ";
             default: return " ";
         }

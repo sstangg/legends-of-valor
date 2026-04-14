@@ -28,32 +28,42 @@ public abstract class Hero extends Character {
 
     protected int experience;
     protected String type;
+    protected int id;
 
     public Hero() {
-        super(0,0);
+        super(0, 0);
         this.inventory = new ArrayList<>();
         this.HP = level * 100;
         this.baseHP = HP;
-
     }
 
-    public Hero(String type) {
-        super(0,0);
+    public Hero(String type, int id) {
+        super(0, 0);
         this.type = type;
+        this.id = id;
         this.inventory = new ArrayList<>();
         this.HP = level * 100;
         this.baseHP = HP;
 
     }
 
-    public Hero(String name, String type) {
-        super(0,0);
+    public Hero(String name, String type, int id) {
+        super(0, 0);
         this.name = name;
         this.type = type;
+        this.id = id;
         this.inventory = new ArrayList<>();
         this.HP = level * 100;
         this.baseHP = HP;
 
+    }
+
+    public int getId(){
+        return id;
+    }
+
+    public void setId(int id){
+        this.id = id;
     }
 
     public int getHP() {
@@ -177,6 +187,8 @@ public abstract class Hero extends Character {
     public void regain() {
         HP *= 1.1; 
         MP *= 1.1;
+        System.out.println(name + " regenerated 10% HP and MP");
+        System.out.println();
     }
 
     protected abstract void applyBonus();
@@ -186,8 +198,8 @@ public abstract class Hero extends Character {
         System.out.println("==== HERO: " + name + " ====");
         System.out.println("Class: " + type);
         System.out.println("Level: " + level);
-        System.out.println("Health Points (HP): " + MP);
-        System.out.println("Mana Points (MP): " + HP);
+        System.out.println("Health Points (HP): " + HP);
+        System.out.println("Mana Points (MP): " + MP);
         System.out.println("Strength: " + strength);
         System.out.println("Agility: " + agility);
         System.out.println("Dexterity: " + dexterity);
@@ -270,4 +282,10 @@ public abstract class Hero extends Character {
     
         }
     }
+
+    public void respawn() {
+        resetToSpawnPosition();
+        System.out.println("--- " + name + "(H" + id + ") respawned at Nexus (" + spawnRow + "," + spawnCol + " ---");
+    }
+
 }

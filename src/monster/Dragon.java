@@ -6,8 +6,8 @@ import java.util.Random;
 import iohandler.FileLoader;
 
 public class Dragon extends Monster {
-    public Dragon() {
-        super("Dragon");
+    public Dragon(int v) {
+        super("Dragon", v);
         List<Dragon> dragons = FileLoader.load("Legends_Monsters_and_Heroes/Dragons.txt", line -> Dragon.parse(line));
 
         if (dragons.isEmpty())
@@ -21,10 +21,11 @@ public class Dragon extends Monster {
         this.defenseValue = randomDragon.defenseValue;
         this.dodgeAbility = randomDragon.dodgeAbility;
         this.baseDamageValue = randomDragon.baseDamageValue;
+        this.id = v;
     }
 
     public Dragon(String name, int level, int defenseValue, int dodgeAbility, int baseDamageValue) {
-        super("Dragon", level);
+        super("Dragon");
         this.name = name;
         this.level = level;
         this.defenseValue = defenseValue;
@@ -32,7 +33,7 @@ public class Dragon extends Monster {
         this.baseDamageValue = baseDamageValue;
     }
 
-     public static Dragon parse(String line) {
+    public static Dragon parse(String line) {
         String[] parts = line.trim().split("\\s+");
         if (parts.length < 5) {
             return null;

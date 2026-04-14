@@ -6,8 +6,8 @@ import java.util.Random;
 import iohandler.FileLoader;
 
 public class Exoskeleton extends Monster {
-    public Exoskeleton() {
-        super("Exoskeleton");
+    public Exoskeleton(int v) {
+        super("Exoskeleton", v);
         List<Exoskeleton> exoskeletons = FileLoader.load("Legends_Monsters_and_Heroes/Exoskeletons.txt", line -> Exoskeleton.parse(line));
 
         if (exoskeletons.isEmpty())
@@ -21,6 +21,7 @@ public class Exoskeleton extends Monster {
         this.defenseValue = randomExoskeleton.defenseValue;
         this.dodgeAbility = randomExoskeleton.dodgeAbility;
         this.baseDamageValue = randomExoskeleton.baseDamageValue;
+        this.id = v;
     }
 
     public Exoskeleton(String name, int level, int defenseValue, int dodgeAbility, int baseDamageValue) {
