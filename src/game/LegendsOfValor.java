@@ -119,19 +119,15 @@ public class LegendsOfValor extends Game {
         case 'P':
             return true;
         case 'F':
-            attackFrom(hero);
-            return true;
+            return attackFrom(hero);
         case 'C':
-            castSpell(hero);
-            return true;
+            return castSpell(hero);
         case 'U':
-            usePotion(hero);
-            return true;
+            return usePotion(hero);
         case 'T':
             return teleport(hero);
         case 'R':
-            recall(hero);
-            return true;
+            return recall(hero);
         case 'M':
             if (getCharactersBlock(heros.get(idx)).getType() == Block.Type.NEXUS) {
                 printMarketWelcome();
@@ -399,55 +395,6 @@ public class LegendsOfValor extends Game {
         return true;
     }
 
-    private void herosBattleTurn() {
-        System.out.println("--- Heros' Turn ---");
-        for (int i = 0; i < heros.size(); i++) {
-            if (heros.get(i).getHP() > 0) {
-                heroAction(i);
-            }
-        }
-
-    }
-
-    private void heroAction(int idx) {
-        Hero hero = heros.get(idx);
-
-        System.out.println("Actions for "+ hero.getName() + " (A=Attack, S=Spell, P=Potion, E=Equip, I=Info, Q=Quit):");
-        List<String> validOptions = Arrays.asList("A", "S", "P", "E", "I", "Q");
-        String option;
-        while (true) {
-            option = input.nextLine();
-
-            if (validOptions.contains(option.toUpperCase())) {
-                break;
-            } else {
-                System.out.println("Invalid input. Try again.");
-            }  
-        }
-
-        char command = option.charAt(0);
-        switch (command) {
-            case 'A':
-                attackFrom(hero);
-                break;
-            case 'S':
-                castSpell(hero);
-                break;
-            case 'P':
-                usePotion(hero);
-                break;
-            case 'E':
-                manageInventory();
-                break;
-            case 'Q':
-                quitGame();
-                break;
-            default:
-                manageInventory();
-        }
-            
-    }
-
     private Hero getRandomAliveHero() {
         List<Hero> alive = new ArrayList<>();
 
@@ -561,7 +508,7 @@ public class LegendsOfValor extends Game {
     // }
     // calculate whether character is in range
     private static boolean inRange(int lane1, int row1, int lane2, int row2) {
-        if (lane1 < 1 || row1 < 1 || lane2 < 1 || row2 < 1 || lane1 > 3 || row1 > 7 || lane2 > 3 || row2 > 7) {
+        if (lane1 < 0 || row1 < 1 || lane2 < 0 || row2 < 1 || lane1 > 2 || row1 > 7 || lane2 > 2 || row2 > 7) {
             throw new IllegalArgumentException();
         }
         return lane1 == lane2 && Math.abs(row1 - row2)> 1;
@@ -576,7 +523,7 @@ public class LegendsOfValor extends Game {
                 inRangeMonsters.add(m);
             }
         }
-        if (monsters.size() == 0) {
+        if (inRangeMonsters.size() == 0) {
             return null;
         }
         System.out.println("Select target monster:");
@@ -588,15 +535,15 @@ public class LegendsOfValor extends Game {
         return inRangeMonsters.get(targetIdx - 1);
     }
 
-    private void castSpell(Hero hero) {
+    private boolean castSpell(Hero hero) {
         if (hero.getSpells() == null || hero.getSpells().isEmpty()) {
             System.out.println(hero.getName() + " has no spells to use!");
-            return;
+            return false;
         }
         Monster target = targetMonster(hero);
         if (target == null) {
-            System.out.println(hero.getName() + " has no monster!");
-            return;
+            System.out.println(hero.getName() + " has no monster nearby to target!");
+            return false;
         }
 
         System.out.println("Select a spell to cast:");
@@ -612,7 +559,7 @@ public class LegendsOfValor extends Game {
 
         if (hero.getMP() < spell.getManaCost()) {
             System.out.println(hero.getName() + " does not have enough MP to cast " + spell.getName());
-            return;
+            return false;
         }
 
         hero.use(spell);
@@ -635,7 +582,7 @@ public class LegendsOfValor extends Game {
             System.out.println(target.getName() + " dodged the spell!");
             System.out.println();
             wait(2);
-            return;
+            return true;
         }
 
 
@@ -663,15 +610,15 @@ public class LegendsOfValor extends Game {
             System.out.println();
             wait(2);
         }
-
+        return true;
         
     }
 
     
-    private void usePotion(Hero hero) {
+    private boolean usePotion(Hero hero) {
          if (hero.getPotions() == null || hero.getPotions().isEmpty()) {
             System.out.println(hero.getName() + " has no potions to use!");
-            return;
+            return false;
         }
 
         System.out.println("Select a potion to use:");
@@ -694,6 +641,7 @@ public class LegendsOfValor extends Game {
         System.out.println(hero.getName() + " took " + potion.getName() + " and recovered " + potion.getEffectAmount() + " " + potion.getEffectType() + "!");
         System.out.println();
         wait(2);
+        return true;
     }
 
     private boolean equipWeapon(Hero hero) {
@@ -808,16 +756,16 @@ public class LegendsOfValor extends Game {
     public boolean isDone() {
         return false; // game runs indefinitely
     }
-    private Monster attackFrom(Hero hero) {
+    private boolean attackFrom(Hero hero) {
         if (hero.getInventory() == null) {
-            return null;
+            return false;
         }
         // TODO: assume hero & monster cannot co-occupy a space
         // TODO: add loop to validate whether chosen monster is in range
         Monster target = targetMonster(hero);
         if (target == null) {
-            System.out.println(hero.getName() + " has no monster!");
-            return null;
+            System.out.println(hero.getName() + " has no monster nearby to target!");
+            return false;
         }
 
         wait(2);
@@ -840,7 +788,7 @@ public class LegendsOfValor extends Game {
             System.out.println(target.getName() + " dodged the attack!");
             System.out.println("");
             wait(2);
-            return target;
+            return true;
         }
 
 
@@ -857,7 +805,7 @@ public class LegendsOfValor extends Game {
             wait(2);
         }
 
-        return target;
+        return true;
     }
 
     private void wait(int sec) {
@@ -894,11 +842,9 @@ public class LegendsOfValor extends Game {
         int oldCol = heros.get(idx).getCol();
         int newRow = oldRow + rowChange;
         int newCol = oldCol + colChange;
-        Block b = (Block) board.getTile(newRow, newCol);
-
         // TODO: cannot move beyond monster without killing it
         // if adjacent, cannot move forward. if currently beside a monster
-        if (!board.isValidMove(newRow, newCol) || b.hasHero()) {
+        if (!board.isValidMove(newRow, newCol) || ((Block) board.getTile(newRow, newCol)).hasHero()) {
             System.out.println("You can't move there!");
             return false;
         } else if (rowChange >= 1 && ((Grid)board).getAdjacentBlock(oldRow, oldCol).hasMonster()) {
@@ -1175,7 +1121,7 @@ public class LegendsOfValor extends Game {
         List<Hero> alive = new ArrayList<>();
         List<Integer> lanes = new ArrayList<>();
         for (Hero h : heros) {
-            if (h.getHP() > 0 && !h.equals(hero)) {
+            if (h.getHP() > 0 && h.getLane() != hero.getLane()) { // must be a different lane
                 alive.add(h);
                 lanes.add(h.getLane());
             }
@@ -1187,12 +1133,12 @@ public class LegendsOfValor extends Game {
         }
         int lane;
 
-        System.out.printf("Which lane should %s teleport to?", hero.getName());
+        System.out.printf("Which lane should %s teleport to? \n", hero.getName());
         for (int i : lanes) {
-            System.out.println("Lane " + i);
+            System.out.println("Lane " + (i+1)); // 1 indexed for user view
         }
         while (true) {
-            lane = input.nextInt(1,3);
+            lane = input.nextInt(1,3)-1;
             if (lanes.contains(lane)) {
                 break;
             }
@@ -1207,29 +1153,40 @@ public class LegendsOfValor extends Game {
         int r = teleportHero.getRow();
         int c = teleportHero.getCol();
         Block adjBlock = ((Grid)board).getAdjacentBlock(r, c);
-        System.out.println("Which square would you like to teleport to?");
-        // no other special info on tiles?
+        System.out.println("Which position would you like to teleport to?");
         //L/R adjacent
         if (adjBlock != null && board.isValidMove(adjBlock.getRow(), adjBlock.getCol()) && !adjBlock.hasHero()) {
-            System.out.printf("1 -  Row: %d, Col: %d", adjBlock.getRow(), adjBlock.getCol());
+            System.out.printf("1 -  Row: %d, Col: %d \n", adjBlock.getRow(), adjBlock.getCol());
         }if (r < board.getDim()-1 && board.isValidMove(r+1, c) && !adjBlock.hasHero()) { // bottom only
-            System.out.printf("2 - Row: %d, Col: %d ", r+1, c);
+            System.out.printf("2 - Row: %d, Col: %d \n", r+1, c);
         }
-        int blockNum = input.nextInt(1,2);
+        System.out.println("4 - Quit teleporting");
+        int blockNum = input.nextInt(1,4);
+        if (blockNum == 4) {
+            System.out.println("Quit teleporting");
+            return false;
+        }
         hero.setLane(lane);
+        ((Block)board.getTile(hero.getRow(), hero.getCol())).moveHeroOff();
         if (blockNum == 1) {
             hero.setPosition(adjBlock.getRow(), adjBlock.getCol());
+            ((Block)board.getTile(adjBlock.getRow(), adjBlock.getCol())).moveHeroOn(hero);
         } else {
             hero.setPosition(r+1, c);
+            ((Block)board.getTile(r+1, c)).moveHeroOn(hero);
         }
-
         System.out.printf("Teleporting to lane %d next to hero %s...\n", lane, hero.getName());
+
         return true;
     }
 
     //TODO: recall
-    private void recall(Hero hero) {
+    private boolean recall(Hero hero) {
+        if (hero.getRow() == hero.getSpawnRow() && hero.getCol() == hero.getSpawnCol()) {
+            return false;
+        }
         hero.respawn();
+        return true;
     }
 
     private void printMarketWelcome() {
