@@ -102,5 +102,8 @@ public class Block extends Tile {
             default: return " ";
         }
     }
+    public boolean equals(Block block) {
+        return block.getRow() == this.getRow() && block.getCol() == this.getCol();
+    }
 
 }

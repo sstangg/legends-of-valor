@@ -87,7 +87,8 @@ public class LegendsOfValor extends Game {
                 col = laneColumns[lane[i]-1][second]; // try other column
                 block = (Block) board.getTile(row, col);
             }
-            heros.get(i).setPosition(row, col);
+            heros.get(i).setPosition(row, col); // TODO: reset to row for testing
+            heros.get(i).setSpawnPosition(row, col);
             heros.get(i).setLane(lane[i]-1);
             block.moveHeroOn(heros.get(i));
         }
@@ -251,8 +252,9 @@ public class LegendsOfValor extends Game {
         int newRow = monster.getRow() + rowChange;
         int newCol = monster.getCol() + colChange;
 
-
-        if (rowChange <= -1 && ((Grid)board).getAdjacentBlock(monster.getRow(), monster.getCol()).hasHero()) {
+        // TODO: check this
+        Block adjacentBlock = ((Grid)board).getAdjacentBlock(monster.getRow(), monster.getCol());
+        if (rowChange <= -1 && adjacentBlock != null && adjacentBlock.hasHero()) {
             // You cannot move forward past a hero without battling it.
             return false;
         }
@@ -518,7 +520,7 @@ public class LegendsOfValor extends Game {
     private Monster targetMonster(Hero hero) {
         List<Monster> inRangeMonsters = new ArrayList<>();
         for (int i = 0; i < monsters.size(); i++) {
-            Monster m = inRangeMonsters.get(i);
+            Monster m = monsters.get(i);
             if (m.getHP() > 0 && inRange(hero.getLane(), hero.getRow(), m.getLane(), m.getRow())) {
                 inRangeMonsters.add(m);
             }
@@ -755,17 +757,8 @@ public class LegendsOfValor extends Game {
         // wait(2);
 
     }
-    private void move(Character ch, int row, int col) {
-        ch.setPosition(row, col);
-        if (ch instanceof Hero) {
-             ((Block) board.getTile(row, col)).moveHeroOn((Hero) ch);
-        } else if (ch instanceof Monster) {
-            ((Block) board.getTile(row, col)).moveMonsterOn((Monster) ch);
-        }
-    }
-
     public boolean isDone() {
-        return false; // TODO: change that game runs indefinitely
+        return complete;
     }
     private boolean attackFrom(Hero hero) {
         if (hero.getInventory() == null) {
@@ -1195,6 +1188,7 @@ public class LegendsOfValor extends Game {
         Block oldBlock = ((Block)board.getTile(hero.getRow(), hero.getCol()));
         Block newBlock = ((Block)board.getTile(hero.getSpawnRow(), hero.getSpawnCol()));
         if (oldBlock.equals(newBlock)) {
+            System.out.println("Already at spawn location");
             return false;
         }
         oldBlock.moveHeroOff();

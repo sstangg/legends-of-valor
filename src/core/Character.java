@@ -40,6 +40,10 @@ public abstract class Character {
         this.row = row;
         this.col = col;
     }
+    public void setSpawnPosition(int row, int col) {
+        this.spawnRow = row;
+        this.spawnCol = col;
+    }
 
     public void setLane(int lane) {
         this.lane = lane;

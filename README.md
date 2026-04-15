@@ -16,14 +16,13 @@ src
     - Game - Abstract class that defines the general game.
     - Character - Abstract class for characters playing the game, moving around board, and engaging in battles.
     - Tile - Abstract class that defines the components that populate the game board.
-    - TileType - Enum enables differentiation between different tile types.
-
+  
 - Core Classes
   - Character – Base class for all game characters (heroes and monsters), holding position info (row, col).
   - Monster – Abstract class for all monsters, encapsulating stats like HP, damage, defense, and dodge.
   - Hero – Abstract class for heroes, tracking attributes, inventory, equipped items, and level progression.
   - Item – Abstract class for all items (Weapons, Armor, Potions, Spells), storing name, price, and level.
-  - MonstersAndHeros - contains the logic for the game - moving on the board, entering market, and engaging in battle.
+  - LegendsOfValor - contains the logic for the game - moving on the board, entering market, and engaging in battle.
 
 - Item classes
   - Weapon / Armor / Potion / Spell – Specialized item types with effects relevant for combat or stats.
@@ -50,7 +49,7 @@ src
 The architecture supports scalability and extendability because:
 - New hero or monster types can be added simply by subclassing Hero or Monster.
 - Items can be extended with new effects or types without changing existing code and only updating the txt files and loading the new data.
-- As heros progress to higher levels, the inventory unlocks new items, which supports extendibility.
+- As heroes progress to higher levels, the inventory unlocks new items, which supports extendibility.
 
 
 ## Notes
@@ -62,10 +61,6 @@ Design Decisions:
 4. DotsAndBoxesBoard and SlidingPuzzleBoard implement Board - Each board provides a specific implementation for storing and managing tiles.
 5. Added input class to abstract console interaction from game logic.
 6. Added Direction enum to simplify logic in Board classes and GameType enum to and GameSession class respectively.
-
-Extra:
-7. Implemented CPU that can be played against if you choose 1 player option for dots and boxes.
-8. Considered if 2 usrs wanted to compete against each other or CPU.
 
 Sliding puzzle fixes: 
 9.  Ensured the puzzle is solvable by working backwards from solved board,
@@ -87,41 +82,80 @@ java -cp bin main/Main
 
 ## Input/Output Example
 ---------------------------------------------------------------------------
-Example of execution for Monsters And Heros game:
+Example of execution for Legends of Valor game:
 
 
 ```
 Enter your name: Nikki
-Enter the hero count (1-3): 3
-Select your hero 1(1: Warrior, 2: Sorcerer, 3: Paladin):1
-Select your hero 2(1: Warrior, 2: Sorcerer, 3: Paladin):2
-Select your hero 3(1: Warrior, 2: Sorcerer, 3: Paladin):3
-Welcome to Monsters And Heros Nikki!
+
+Select difficulty:
+1. Easy (monsters spawn every 5 rounds)
+2. Medium (monsters spawn every 4 rounds)
+3. Hard (monsters spawn every 3 round)
+Choice (1-3): 1
+Select type for Hero 1 (1: Warrior, 2: Sorcerer, 3: Paladin): 1
+Select lane for Hero 1 (1: Left, 2: Middle, 3: Right): 1
+Select type for Hero 2 (1: Warrior, 2: Sorcerer, 3: Paladin): 2
+Select lane for Hero 2 (1: Left, 2: Middle, 3: Right): 2
+Select type for Hero 3 (1: Warrior, 2: Sorcerer, 3: Paladin): 3
+Select lane for Hero 3 (1: Left, 2: Middle, 3: Right): 3
+
+Welcome to Legends of Valor Nikki!
 Prepare yourself for new adventures and challenges ahead!
-+---+---+---+---+---+---+---+---+
-| P |   |   |   |   | M |   |   |
-+---+---+---+---+---+---+---+---+
-|   | M | M |   | X | M | M | M |
-+---+---+---+---+---+---+---+---+
-|   |   |   |   |   | M | M |   |
-+---+---+---+---+---+---+---+---+
-| X |   | M | X | M |   |   | M |
-+---+---+---+---+---+---+---+---+
-| X | X | M | X |   | M | M | M |
-+---+---+---+---+---+---+---+---+
-| M | X |   |   |   | X | X |   |
-+---+---+---+---+---+---+---+---+
-| X |   | M | M | X |   | X |   |
-+---+---+---+---+---+---+---+---+
-|   |   |   | M |   |   |   |   |
-+---+---+---+---+---+---+---+---+
+
+The game will start shortly with the following heroes:
+
+==== Hero 1: Gaerdal_Ironhand I ====
+==== Hero 2: Reign_Havoc II ====
+==== Hero 3: Caliber_Heist III ====
+
+MONSTERS SPAWNING...
+
+----- FallenAngel (M1) spawned at (0,1)! -----
+----- Aasterinian (M2) spawned at (0,4)! -----
+----- Chiang-shih (M3) spawned at (0,6)! -----
+
+Let's begin!
+
+[ROUND 1]
+============HEROS' MOVE===============
++=======+=======+=======+=======+=======+=======+=======+=======+
+|   N   |   M1  |███████|   N   |   M2  |███████|   M3  |   N   |
++=======+=======+=======+=======+=======+=======+=======+=======+
+|   K   |       |███████|   C   |       |███████|   K   |   K   |
++=======+=======+=======+=======+=======+=======+=======+=======+
+|   K   |   C   |███████|   B   |   C   |███████|   X   |   K   |
++=======+=======+=======+=======+=======+=======+=======+=======+
+|   X   |   K   |███████|   B   |   C   |███████|   X   |   C   |
++=======+=======+=======+=======+=======+=======+=======+=======+
+|   K   |   K   |███████|   K   |   C   |███████|   K   |   K   |
++=======+=======+=======+=======+=======+=======+=======+=======+
+|   X   |   C   |███████|   B   |       |███████|       |       |
++=======+=======+=======+=======+=======+=======+=======+=======+
+|   X   |   X   |███████|   X   |   X   |███████|   K   |   C   |
++=======+=======+=======+=======+=======+=======+=======+=======+
+|   N   |   H1  |███████|   H2  |   N   |███████|   H3  |   N   |
++=======+=======+=======+=======+=======+=======+=======+=======+
+
+===== Gaerdal_Ironhand I's Turn =====
+Position: Row 1, Col 1 | Lane: 1
+HP: 450 | MP: 100 | Gold: 1354 | Level: 1
+
 Controls:
-W/A/S/D - move
-I/C - manage inventory (view info, equip/use items)
-M - enter market (if on market tile)
-Q - quit game
+W/A/S/D - Move (up/left/down/right)
+I - Hero Info/Inventory
+E - Equip/Unequip
+P - Pass turn
+F - Attack
+C - Cast Spell
+U - Use Potion
+T - Teleport
+R - Recall
+M - Market (only at Nexus)
 H - Help/Information
-Your move: s
+Q - Quit game
+Your move:
+
 No monsters! You are safe this time.
 
 +---+---+---+---+---+---+---+---+
