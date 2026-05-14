@@ -1,11 +1,9 @@
 Required sections: Header, Files, Notes, How to compile and run, I/O Example
 
 
-# CS611-Assignment 4
 ## Legends of Valor
 ---------------------------------------------------------------------------
-- Name: Nikki Rejai, Sophia Tang
-- Email: nikkirj@bu.edu, sstang@bu.edu
+- Nikki Rejai, Sophia Tang
 
 ## Files
 ---------------------------------------------------------------------------
@@ -46,7 +44,7 @@ src
   - FileLoader – Loads game data (heroes, monsters, items) from text files using a generic parser.
   - LineParser – Functional interface to parse each line from data files into objects.
 
-The architecture supports scalability and extendability because:
+Scalability and extendability considerations:
 - New hero or monster types can be added simply by subclassing Hero or Monster.
 - Items can be extended with new effects or types without changing existing code and only updating the txt files and loading the new data.
 - As heroes progress to higher levels, the inventory unlocks new items, which supports extendibility.
